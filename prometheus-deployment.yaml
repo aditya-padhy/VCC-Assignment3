@@ -1,0 +1,70 @@
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: prometheus-server
+#   namespace: monitoring
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: prometheus-server
+#   template:
+#     metadata:
+#       labels:
+#         app: prometheus-server
+#       annotations:
+#         prometheus.io/scrape: "true"
+#         prometheus.io/port: "9091"
+#         prometheus.io/path: "/metrics"
+#     spec:
+#       containers:
+#         - name: prometheus
+#           image: prom/prometheus
+#           ports:
+#             - containerPort: 9090
+#           volumeMounts:
+#             - name: config-volume
+#               mountPath: /etc/prometheus
+#       volumes:
+#         - name: config-volume
+#           configMap:
+#             name: prometheus-server-conf
+#             defaultMode: 420
+    
+# prometheus-deployment.yaml (Optionally cleaned up)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-server
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-server
+  template:
+    metadata:
+      labels:
+        app: prometheus-server
+      # Annotations below are optional here as static config scrapes localhost:9090
+      # If kept, port should be 9090
+      # annotations:
+      #   prometheus.io/scrape: "true"
+      #   prometheus.io/port: "9090" # Correct port for Prometheus itself
+      #   prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: prometheus
+          image: prom/prometheus
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml" # Good practice to specify
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/prometheus
+      volumes:
+        - name: config-volume
+          configMap:
+            name: prometheus-server-conf
+            # Removed defaultMode as it's often not needed and was set strangely

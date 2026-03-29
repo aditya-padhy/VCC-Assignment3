@@ -1,0 +1,23 @@
+# locust-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: locust-master
+  labels:
+    app: locust-master
+# No namespace specified, defaults to 'default'
+spec:
+  selector:
+    app: locust-master
+  ports:
+    - name: web-ui
+      port: 8089
+      targetPort: 8089
+    - name: comm1 # Optional: For workers
+      port: 5557
+      targetPort: 5557
+    - name: comm2 # Optional: For workers
+      port: 5558
+      targetPort: 5558
+  # type: ClusterIP # Default, suitable for internal access by exporter/workers
+  type: NodePort    # Use NodePort or LoadBalancer if you want external UI access

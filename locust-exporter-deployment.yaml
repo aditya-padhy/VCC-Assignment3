@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locust-exporter
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locust-exporter
+  template:
+    metadata:
+      labels:
+        app: locust-exporter
+    spec:
+      containers:
+      - name: exporter
+        image: containersol/locust_exporter:latest
+        args:
+          - "--locust.uri=http://locust-master.default.svc.cluster.local:8089"
+        ports:
+          - containerPort: 9646        # exporter listens here :contentReference[oaicite:2]{index=2}

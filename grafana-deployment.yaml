@@ -1,0 +1,30 @@
+# grafana-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+      - name: grafana
+        image: grafana/grafana-oss:latest # Use official OSS image
+        ports:
+        - containerPort: 3000
+        # Optional: Add volume for persistent storage
+        # volumeMounts:
+        # - name: grafana-storage
+        #   mountPath: /var/lib/grafana
+      # Optional: Define persistent volume
+      # volumes:
+      # - name: grafana-storage
+      #   persistentVolumeClaim:
+      #     claimName: grafana-pvc # You would need to create a PVC 

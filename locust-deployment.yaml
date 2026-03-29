@@ -1,0 +1,35 @@
+# locust-deployment.yaml (Corrected for Standalone Mode)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locust-master # You can keep the name, it just won't be only a master anymore
+  labels:
+    app: locust-master
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: locust-master
+  template:
+    metadata:
+      labels:
+        app: locust-master
+    spec:
+      containers:
+      - name: locust-master
+        image: locustio/locust
+        ports:
+        - containerPort: 8089 # Web UI
+        # Ports 5557/5558 are not strictly needed for standalone, but harmless to leave
+        - containerPort: 5557
+        - containerPort: 5558
+        volumeMounts:
+        - name: locust-script
+          mountPath: /mnt/locust
+        # command: ["locust"] # Command is implicitly locust if not specified and entrypoint is correct
+        # Remove --master from args:
+        args: ["-f", "/mnt/locust/locustfile.py", "--host", "http://sample-app3.default.svc.cluster.local"]
+      volumes:
+      - name: locust-script
+        configMap:
+          name: locust-script-cm
